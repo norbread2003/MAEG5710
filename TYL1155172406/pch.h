@@ -11,3 +11,10 @@
 #include "framework.h"
 
 #endif //PCH_H
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+#include <gl\gl.h>
+#include <gl\glu.h>
