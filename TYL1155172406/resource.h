@@ -23,30 +23,31 @@
 #define ID_DISPLAY_SHADED               32785
 #define ID_DISPLAY_WIREFRAME            32786
 #define ID_DISPLAY_WIREFRAME32787       32787
-#define ID_BUTTON32789                  32789
-#define ID_BUTTON32790                  32790
-#define ID_BUTTON32791                  32791
-#define ID_BUTTON32792                  32792
-#define ID_BUTTON32793                  32793
-#define ID_BUTTON32794                  32794
-#define ID_BUTTON32795                  32795
-#define ID_BUTTON32796                  32796
-#define ID_BUTTON32797                  32797
-#define ID_BUTTON32798                  32798
-#define ID_BUTTON32799                  32799
-#define ID_BUTTON32800                  32800
-#define ID_BUTTON32802                  32802
-#define ID_BUTTON32803                  32803
-#define ID_BUTTON32804                  32804
-#define ID_BUTTON32805                  32805
+#define ID_BUTTONRX_                    32790
+#define ID_BUTTONRy                     32791
+#define ID_BUTTONRY                     32791
+#define ID_BUTTONRY_                    32792
+#define ID_BUTTONTX                     32795
+#define ID_BUTTONTX_                    32796
+#define ID_BUTTONTY                     32797
+#define ID_BUTTONTY_                    32798
+#define ID_BUTTONTZ                     32799
+#define ID_BUTTONTZ_                    32800
+#define ID_BUTTON_FULL                  32802
+#define ID_BUTTON_EMPTY                 32803
+#define ID_BUTTONZ                      32804
+#define ID_BUTTONZ_                     32805
 #define ID_BUTTON32806                  32806
+#define ID_BUTTONR                      32806
+#define ID_BUTTONRZ_                    32807
+#define ID_BUTTONRZ                     32808
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
-#define _APS_NEXT_COMMAND_VALUE         32807
+#define _APS_NEXT_COMMAND_VALUE         32809
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

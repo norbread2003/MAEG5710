@@ -36,6 +36,35 @@ BEGIN_MESSAGE_MAP(CTYL1155172406View, CView)
 	ON_WM_KEYDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEWHEEL()
+	ON_COMMAND(ID_TRASLATION_X, &CTYL1155172406View::OnTraslationX)
+	ON_COMMAND(ID_TRASLATION_X32772, &CTYL1155172406View::OnTraslationX32772)
+	ON_COMMAND(ID_TRASLATION_Y, &CTYL1155172406View::OnTraslationY)
+	ON_COMMAND(ID_TRASLATION_Y32774, &CTYL1155172406View::OnTraslationY32774)
+	ON_COMMAND(ID_TRASLATION_Z, &CTYL1155172406View::OnTraslationZ)
+	ON_COMMAND(ID_ROTATION_Z32782, &CTYL1155172406View::OnRotationZ32782)
+	ON_COMMAND(ID_ROTATION_X, &CTYL1155172406View::OnRotationX)
+	ON_COMMAND(ID_ROTATION_X32778, &CTYL1155172406View::OnRotationX32778)
+	ON_COMMAND(ID_ROTATION_Y, &CTYL1155172406View::OnRotationY)
+	ON_COMMAND(ID_ROTATION_Y32780, &CTYL1155172406View::OnRotationY32780)
+	ON_COMMAND(ID_ZOOM_IN, &CTYL1155172406View::OnZoomIn)
+	ON_COMMAND(ID_ZOOM_OUT, &CTYL1155172406View::OnZoomOut)
+	ON_COMMAND(ID_BUTTON_EMPTY, &CTYL1155172406View::OnButtonEmpty)
+	ON_COMMAND(ID_BUTTON_FULL, &CTYL1155172406View::OnButtonFull)
+	ON_COMMAND(ID_BUTTONR, &CTYL1155172406View::OnButtonr)
+	//	ON_COMMAND(ID_BUTTONRy, &CTYL1155172406View::OnButtonry)
+	ON_COMMAND(ID_BUTTONRX_, &CTYL1155172406View::OnButtonrx_)
+	ON_COMMAND(ID_BUTTONRY_, &CTYL1155172406View::OnButtonry_)
+	ON_COMMAND(ID_BUTTONRZ, &CTYL1155172406View::OnButtonrz)
+	ON_COMMAND(ID_BUTTONRZ_, &CTYL1155172406View::OnButtonrz_)
+	ON_COMMAND(ID_BUTTONTX, &CTYL1155172406View::OnButtontx)
+	ON_COMMAND(ID_BUTTONTX_, &CTYL1155172406View::OnButtontx_)
+	ON_COMMAND(ID_BUTTONTY, &CTYL1155172406View::OnButtonty)
+	ON_COMMAND(ID_BUTTONTY_, &CTYL1155172406View::OnButtonty_)
+	ON_COMMAND(ID_BUTTONTZ, &CTYL1155172406View::OnButtontz)
+	ON_COMMAND(ID_BUTTONTZ_, &CTYL1155172406View::OnButtontz_)
+	ON_COMMAND(ID_BUTTONRY, &CTYL1155172406View::OnButtonry)
+	ON_COMMAND(ID_BUTTONZ, &CTYL1155172406View::OnButtonzoom)
+	ON_COMMAND(ID_BUTTONZ_, &CTYL1155172406View::OnButtonzoom_)
 END_MESSAGE_MAP()
 
 // CTYL1155172406View construction/destruction
@@ -53,6 +82,9 @@ CTYL1155172406View::CTYL1155172406View() noexcept
 	xrot = 0.0;
 	yrot = 0.0;
 	m_fScale = 1.0;
+
+	verts.clear();
+	vnorms.clear();
 }
 
 CTYL1155172406View::~CTYL1155172406View()
@@ -137,35 +169,48 @@ void CTYL1155172406View::OnFileOpen()
 {
 	// TODO: Add your command handler code here
 	CString szFilter;
-	szFilter = "txt|*.txt|*.*|*.*||";
-	CFileDialog FD(TRUE, _T("txt"), _T("*.txt"), OFN_HIDEREADONLY, szFilter);
-	string tmp;
-	float a, b, c, d;
-	a = b = c = d = 0.0;
-
+	szFilter = "STL|*.STL|*.*|*.*||";
+	CFileDialog FD(TRUE, _T("STL"), _T("*.STL"), OFN_HIDEREADONLY, szFilter);
 
 	if (FD.DoModal() == IDOK)
 	{
-		in.open(FD.GetPathName());
-		while (!in.eof())
+		Path = FD.GetPathName();
+		CString str;
+		CStdioFile fFile;
+		int section = 0, point = 0;
+		fFile.Open(Path, CStdioFile::modeReadWrite/*|CStdioFile::modeCreate|CStdioFile::modeWrite*/);
+		while (fFile.ReadString(str))
 		{
-			in >> tmp;
-			if (tmp.compare("marks") == 0)
+
+			if ((str.Find("solid") == -1) && (str.Find("outer loop") == -1) && (str.Find("endloop") == -1) && (str.Find("endfacet") == -1) && (str.Find("endsolid") == -1))
 			{
-				in >> a >> b >> c >> d;
-				t1.push_back(a);
-				t2.push_back(b);
-				t3.push_back(c);
-				t4.push_back(d);
+				if (str.Find("facet normal") != -1)
+				{
+					float a, b, c;
+					sscanf_s(str, "%*s %*s %f %f %f", &a, &b, &c);
+					vnorms.push_back(a);
+					vnorms.push_back(b);
+					vnorms.push_back(c);
+					vnorms.push_back(a);
+					vnorms.push_back(b);
+					vnorms.push_back(c);
+					vnorms.push_back(a);
+					vnorms.push_back(b);
+					vnorms.push_back(c);
+				}
+				else
+				{
+					float a, b, c;
+					sscanf_s(str, "%*s  %f %f %f", &a, &b, &c);
+					verts.push_back(a);
+					verts.push_back(b);
+					verts.push_back(c);
+
+				}
 			}
 		}
-		in.close();
-		out.open("check.txt");
-		for (int i = 0; i < t1.size(); i++)
-		{
-			out << t1[i] << " " << t2[i] << " " << t3[i] << " " << t4[i] << endl;
-		}
-		out.close();
+		fFile.Close();
+		InvalidateRect(NULL, FALSE);
 	}
 }
 bool CTYL1155172406View::SetupPixelFormat()
@@ -266,50 +311,28 @@ void CTYL1155172406View::RenderScene()
 	glRotatef(xrot, 1, 0, 0);
 	glRotatef(yrot, 0, 1, 0);
 
-	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0f);
 
-	glNormal3f(0, 0, 1);
-	//////Front///////////////
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(10.0, 0.0, 0.0);
-	glVertex3f(10.0, 5.0, 0.0);
-	glVertex3f(0.0, 5.0, 0.0);
-
-	glNormal3f(0, 0, -1);
-	/////Back //////////////////
-	glVertex3f(0.0, 0.0, -5.0);
-	glVertex3f(0.0, 5.0, -5.0);
-	glVertex3f(10.0, 5.0, -5.0);
-	glVertex3f(10.0, 0.0, -5.0);
-
-	glNormal3f(1, 0, 0);
-	//////Right///////////////
-	glVertex3f(10.0, 0.0, 0.0);
-	glVertex3f(10.0, 0.0, -5.0);
-	glVertex3f(10.0, 5.0, -5.0);
-	glVertex3f(10.0, 5.0, 0.0);
-
-	glNormal3f(-1, 0, 0);
-	//////Left///////////////
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 5.0, 0.0);
-	glVertex3f(0.0, 5.0, -5.0);
-	glVertex3f(0.0, 0.0, -5.0);
-
-	glNormal3f(0, 1, 0);
-	//////Top///////////////
-	glVertex3f(0.0, 5.0, 0.0);
-	glVertex3f(10.0, 5.0, 0.0);
-	glVertex3f(10.0, 5.0, -5.0);
-	glVertex3f(0.0, 5.0, -5.0);
-
-	glNormal3f(0, -1, 0);
-	//////Bottom///////////////
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 0.0, -5.0);
-	glVertex3f(10.0, 0.0, -5.0);
-	glVertex3f(10.0, 0.0, 0.0);
-	glEnd();
+	glPushMatrix();
+	int m_div = 1;
+	for (int i = 0; i < vnorms.size(); i++)
+	{
+		glBegin(GL_TRIANGLES);
+		//glColor3f(1.0f, 0.0f, 0.0f);
+		glNormal3f(vnorms[i] / m_div, vnorms[i + 1] / m_div, vnorms[i + 2] / m_div);
+		glVertex3f((-verts[i] + verts[1]) / m_div, (-verts[i + 1] + verts[2]) / m_div, (-verts[i + 2] + verts[3]) / m_div);
+		i += 3;
+		//glColor3f(0.0f, 1.0f, 0.0f);
+		glNormal3f(vnorms[i] / m_div, vnorms[i + 1] / m_div, vnorms[i + 2] / m_div);
+		glVertex3f((-verts[i] + verts[1]) / m_div, (-verts[i + 1] + verts[2]) / m_div, (-verts[i + 2] + verts[3]) / m_div);
+		i += 3;
+		//glColor3f(0.0f, 0.0f, 1.0f);
+		glNormal3f(vnorms[i] / m_div, vnorms[i + 1] / m_div, vnorms[i + 2] / m_div);
+		glVertex3f((-verts[i] + verts[1]) / m_div, (-verts[i + 1] + verts[2]) / m_div, (-verts[i + 2] + verts[3]) / m_div);
+		i += 2;
+		glEnd();
+	}
+	glPopMatrix();
 
 
 	glFlush();
@@ -385,6 +408,8 @@ void CTYL1155172406View::Lighting()
 	glEnable(GL_NORMALIZE); // force the length of surface normal to be 1 so that the lighting and material effect can be calculated correctly
 	glEnable(GL_DEPTH_TEST);
 
+	glEnable(GL_COLOR_MATERIAL);
+	glLightModeli(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	glEnable(GL_LIGHT0);
 
@@ -415,3 +440,227 @@ void CTYL1155172406View::Material()
 
 }
 
+
+
+void CTYL1155172406View::OnTraslationX()
+{
+	// TODO: Add your command handler code here
+	xtrans += 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnTraslationX32772()
+{
+	// TODO: Add your command handler code here
+	xtrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnTraslationY()
+{
+	// TODO: Add your command handler code here
+	ytrans += 0.1;
+	InvalidateRect(0, FALSE);
+
+}
+
+
+void CTYL1155172406View::OnTraslationY32774()
+{
+	// TODO: Add your command handler code here
+	ytrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnTraslationZ()
+{
+	// TODO: Add your command handler code here
+	ztrans += 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnRotationZ32782()
+{
+	// TODO: Add your command handler code here
+	ztrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnRotationX()
+{
+	// TODO: Add your command handler code here
+	xrot += 5.5;
+}
+
+
+void CTYL1155172406View::OnRotationX32778()
+{
+	// TODO: Add your command handler code here
+	xrot -= 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnRotationY()
+{
+	// TODO: Add your command handler code here
+	yrot += 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnRotationY32780()
+{
+	// TODO: Add your command handler code here
+	yrot -= 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnZoomIn()
+{
+	// TODO: Add your command handler code here
+	m_fScale -= 0.1f;
+	InvalidateRect(NULL, FALSE);
+}
+
+
+void CTYL1155172406View::OnZoomOut()
+{
+	// TODO: Add your command handler code here
+	if (m_fScale > 0.1f)
+		m_fScale += 0.1f;
+	InvalidateRect(NULL, FALSE);
+}
+
+
+
+void CTYL1155172406View::OnButtonEmpty()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CTYL1155172406View::OnButtonFull()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CTYL1155172406View::OnButtonr()
+{
+	// TODO: Add your command handler code here
+}
+
+
+//void CTYL1155172406View::OnButtonry()
+//{
+//	// TODO: Add your command handler code here
+//	yrot += 5.5;
+//	InvalidateRect(0, FALSE);
+//}
+
+
+void CTYL1155172406View::OnButtonrx_()
+{
+	// TODO: Add your command handler code here
+	xrot += 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonry_()
+{
+	// TODO: Add your command handler code here
+	yrot -= 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonrz()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CTYL1155172406View::OnButtonrz_()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CTYL1155172406View::OnButtontx()
+{
+	// TODO: Add your command handler code here
+	xtrans += 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtontx_()
+{
+	// TODO: Add your command handler code here
+	xtrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonty()
+{
+	// TODO: Add your command handler code here
+	ytrans += 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonty_()
+{
+	// TODO: Add your command handler code here
+	ytrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtontz()
+{
+	// TODO: Add your command handler code here
+	ztrans += 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtontz_()
+{
+	// TODO: Add your command handler code here
+	ztrans -= 0.1;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonry()
+{
+	// TODO: Add your command handler code here
+	yrot += 5.5;
+	InvalidateRect(0, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonzoom()
+{
+	// TODO: Add your command handler code here
+	m_fScale += 0.1f;
+	InvalidateRect(NULL, FALSE);
+}
+
+
+void CTYL1155172406View::OnButtonzoom_()
+{
+	// TODO: Add your command handler code here
+	m_fScale -= 0.1f;
+	InvalidateRect(NULL, FALSE);
+}

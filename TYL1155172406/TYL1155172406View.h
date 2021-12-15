@@ -34,6 +34,10 @@ public:
 	float ytrans;
 	float ztrans;
 
+	CString Path;
+	vector<float>verts;	
+	vector<float>vnorms;
+
 	CPoint current_point;
 	CPoint last_point;
 	float xrot;
@@ -72,6 +76,38 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	afx_msg void OnTraslationX();
+	afx_msg void OnTraslationX32772();
+	afx_msg void OnTraslationY();
+	afx_msg void OnTraslationY32774();
+	afx_msg void OnTraslationZ();
+	afx_msg void OnRotationZ32782();
+	afx_msg void OnRotationX();
+	afx_msg void OnRotationX32778();
+	afx_msg void OnRotationY();
+	afx_msg void OnRotationY32780();
+	afx_msg void OnZoomIn();
+	afx_msg void OnZoomOut();
+	afx_msg void OnButtonrx();
+	afx_msg void OnButtonEmpty();
+	afx_msg void OnButtonFull();
+	afx_msg void OnButtonr();
+//	afx_msg void OnButtonry();
+	afx_msg void OnButtonrx_();
+	afx_msg void OnButtonry_();
+	afx_msg void OnButtonrz();
+	afx_msg void OnButtonrz_();
+	afx_msg void OnButtontx();
+	afx_msg void OnButtontx_();
+	afx_msg void OnButtonty();
+	afx_msg void OnButtonty_();
+	afx_msg void OnButtontz();
+	afx_msg void OnButtontz_();
+	afx_msg void OnButtonz();
+	afx_msg void OnButtonz_();
+	afx_msg void OnButtonry();
+	afx_msg void OnButtonzoom();
+	afx_msg void OnButtonzoom_();
 };
 
 #ifndef _DEBUG  // debug version in TYL1155172406View.cpp
